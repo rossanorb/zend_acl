@@ -7,28 +7,29 @@ class Application_Model_Auth{
 		$dbAdapter = Zend_Db_Table::getDefaultAdapter();
 		//Inicia o adaptador Zend_Auth para banco de dados
 		$authAdapter = new Zend_Auth_Adapter_DbTable($dbAdapter);
-		$authAdapter->setTableName('usuario')
+		$authAdapter->setTableName('users')
                             ->setIdentityColumn('login')
-                            ->setCredentialColumn('senha')
+                            ->setCredentialColumn('password')
                             ->setCredentialTreatment('SHA1(?)');
 		//Define os dados para processar o login
 		$authAdapter->setIdentity($login)
                             ->setCredential($senha);
 		//Faz inner join dos dados do perfil no SELECT do Auth_Adapter
 		$select = $authAdapter->getDbSelect();
-		$select->join( array('p' => 'perfil'), 'p.id = usuario.perfil_id', array('nome_perfil' => 'nome') );
+                $select->join( 'roles', 'roles.id_role = users.id_role', array('role_roles' => 'role') );		
 		//Efetua o login
 		$auth = Zend_Auth::getInstance();
 		$result = $auth->authenticate($authAdapter);
+               
 		//Verifica se o login foi efetuado com sucesso
 		if ( $result->isValid() ) {
 			//Recupera o objeto do usuário, sem a senha
-			$info = $authAdapter->getResultRowObject(null, 'senha');
+			$info = $authAdapter->getResultRowObject(null, 'password');
 	
-			$usuario = new Model_Usuario();
-			$usuario->setFullName( $info->nome_completo );
+			$usuario = new Application_Model_Users();
+			$usuario->setFullName( $info->nome );
 			$usuario->setUserName( $info->login );
-			$usuario->setRoleId( $info->nome_perfil );
+			$usuario->setRoleId( $info->role_roles );
 	
 			$storage = $auth->getStorage();
 			$storage->write($usuario);
