@@ -29,7 +29,7 @@ class Application_Model_Auth{
 			$usuario = new Application_Model_Users();
 			$usuario->setFullName( $info->nome );
 			$usuario->setUserName( $info->login );
-			$usuario->setRoleId( $info->role_roles ); // writer
+			$usuario->setRoleId( $info->role_roles );
                         $usuario->setRoleCod($info->id_role );			                        
                         
 			$storage = $auth->getStorage();
