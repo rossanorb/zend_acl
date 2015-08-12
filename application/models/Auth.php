@@ -16,7 +16,7 @@ class Application_Model_Auth{
                             ->setCredential($senha);
 		//Faz inner join dos dados do perfil no SELECT do Auth_Adapter
 		$select = $authAdapter->getDbSelect();
-                $select->join( 'roles', 'roles.id_role = users.id_role', array('role_roles' => 'role') );		
+                $select->join( 'roles', 'roles.id_role = users.id_role', array('role_roles' => 'role', 'id_role') );                
 		//Efetua o login
 		$auth = Zend_Auth::getInstance();
 		$result = $auth->authenticate($authAdapter);
@@ -29,8 +29,9 @@ class Application_Model_Auth{
 			$usuario = new Application_Model_Users();
 			$usuario->setFullName( $info->nome );
 			$usuario->setUserName( $info->login );
-			$usuario->setRoleId( $info->role_roles );
-	
+			$usuario->setRoleId( $info->role_roles ); // writer
+                        $usuario->setRoleCod($info->id_role );			                        
+                        
 			$storage = $auth->getStorage();
 			$storage->write($usuario);
 	
